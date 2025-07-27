@@ -37,29 +37,18 @@
     <div class="container mx-auto px-4 py-8 md:py-12">
         <header class="text-center mb-10">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-900">NuLife Clinic</h1>
-            <p class="text-lg text-gray-600 mt-2">Interactive Social Media Content Calendar (July 28 - Aug 24, 2025)</p>
+            <p class="text-lg text-gray-600 mt-2">Social Media Content Calendar Dashboard</p>
         </header>
 
         <main>
             <div class="bg-white p-6 rounded-2xl shadow-lg">
                 <div class="mb-8">
-                    <h2 class="text-xl font-bold text-center text-gray-700 mb-2">Content Mix Overview</h2>
-                    <p class="text-center text-gray-500 mb-4 text-sm">This chart shows the number of Reels vs. Posters planned for the selected week.</p>
-                    <div class="chart-container">
-                        <canvas id="contentMixChart"></canvas>
+                    <h2 class="text-2xl font-bold text-center text-gray-700 mb-4">Available Monthly Calendars</h2>
+                    <p class="text-center text-gray-500 mb-6 text-sm">Select a month to view the detailed content calendar</p>
+                    
+                    <div id="calendar-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                        <div class="text-center text-gray-500">Loading calendars...</div>
                     </div>
-                </div>
-
-                <div class="border-b border-gray-200 mb-6">
-                    <nav class="-mb-px flex justify-center space-x-2 md:space-x-4" aria-label="Tabs">
-                        <button class="tab whitespace-nowrap py-3 px-3 md:px-4 border-b-2 font-semibold text-sm text-gray-500 hover:border-gray-300 hover:text-gray-700 tab-active" data-week="1">Week 1</button>
-                        <button class="tab whitespace-nowrap py-3 px-3 md:px-4 border-b-2 font-semibold text-sm text-gray-500 hover:border-gray-300 hover:text-gray-700" data-week="2">Week 2</button>
-                        <button class="tab whitespace-nowrap py-3 px-3 md:px-4 border-b-2 font-semibold text-sm text-gray-500 hover:border-gray-300 hover:text-gray-700" data-week="3">Week 3</button>
-                        <button class="tab whitespace-nowrap py-3 px-3 md:px-4 border-b-2 font-semibold text-sm text-gray-500 hover:border-gray-300 hover:text-gray-700" data-week="4">Week 4</button>
-                    </nav>
-                </div>
-
-                <div id="calendar-content" class="overflow-x-auto">
                 </div>
             </div>
         </main>
@@ -71,153 +60,163 @@
     </div>
 
     <script>
-        const calendarData = {
-            1: [
-                { day: "Mon", date: "July 28", theme: "Educate", type: "Poster", idea: "<strong>Myth Buster Monday:</strong> A clean graphic addressing a common myth. Text: \"Myth: You must rest completely after a fracture.\"", caption: "Is this a myth you believed? The right kind of movement is often key to a faster recovery! Always follow your doctor's advice. #MythBuster #FractureCare #OrthoFacts #NuLifeBallia" },
-                { day: "Tue", date: "July 29", theme: "Festival", type: "Poster", idea: "<strong>Nag Panchami Greeting:</strong> An elegant design with a subtle festive touch and traditional serpent motifs.", caption: "Wishing everyone a blessed and auspicious Nag Panchami. Stay safe and keep moving! #NagPanchami2025 #Festival #Ballia" },
-                { day: "Wed", date: "July 30", theme: "Engage/Trust", type: "Reel", idea: "<strong>Clinic Tour:</strong> A quick, professional tour of the hospital's physiotherapy wing or a specific piece of advanced equipment.", caption: "A glimpse into our state-of-the-art facilities at NuLife, where your speedy recovery is our priority. #NuLifeHospital #Ballia #AdvancedCare #Physiotherapy" },
-                { day: "Fri", date: "Aug 1", theme: "Trust", type: "Poster", idea: "<strong>About NuLife Clinic:</strong> A professional design showcasing the clinic's credentials, specializations, and years of experience. Text: Include clinic achievements, certifications, and mission statement.", caption: "NuLife Hospital - Your trusted partner in orthopedic care in Ballia. Excellence in treatment, compassion in care. #NuLifeHospital #OrthopedicExcellence #BalliaHealthcare #TrustedCare" }
-            ],
-            2: [
-                { day: "Tue", date: "Aug 5", theme: "Educate", type: "Reel", idea: "<strong>How-To Video:</strong> \"3 Simple Stretches for Desk Workers.\" Demonstrate safe, easy stretches for the neck and back using clinic staff or animations.", caption: "Feeling stiff from sitting all day? Try these 3 simple stretches! **Disclaimer: Consult a doctor before starting any new exercise.** #DeskStretches #BackPainRelief #WorkFromHome #HealthyHabits" },
-                { day: "Thu", date: "Aug 7", theme: "Promote", type: "Poster", idea: "<strong>Service Spotlight:</strong> Focus on Total Knee Replacement. Text: \"Regain your mobility with our expert team.\"", caption: "Don't let knee pain hold you back. Learn more about our advanced Total Knee Replacement procedures. DM us to book a consultation. #KneeReplacement #JointPain #PainFreeLife #NuLifeCare" },
-                { day: "Sat", date: "Aug 9", theme: "Engage", type: "Reel", idea: "<strong>Q&A Reel:</strong> Voice-over or text-based answers to 2-3 common questions received from a \"Questions\" sticker in Stories, with clinic branding.", caption: "You asked, we answered! Our expert team at NuLife answers some of your most common questions about joint health. Have more questions? Drop them below! #QandA #OrthoExpert #AskTheExperts" }
-            ],
-            3: [
-                { day: "Mon", date: "Aug 12", theme: "Educate", type: "Poster (Carousel)", idea: "<strong>\"5 Foods for Stronger Bones.\"</strong> Each slide features one food item (e.g., Milk, Spinach, Fish) with a brief explanation.", caption: "Fuel your body, fortify your bones! Swipe through to see our top 5 foods for bone health. What's your favorite healthy food? #BoneHealth #HealthyEating #Calcium #VitaminD #Nutrition" },
-                { day: "Wed", date: "Aug 14", theme: "Trust", type: "Reel", idea: "<strong>\"A Day at NuLife\" Montage:</strong> Fast-paced clips of the clean reception area, therapy equipment, consultation rooms (without showing patient faces).", caption: "From consultation to recovery, a look at the journey our patients take at NuLife. Your health and comfort are at the heart of everything we do. #PatientCare #HospitalLife #TrustedCare" },
-                { day: "Fri", date: "Aug 15", theme: "Festival", type: "Poster", idea: "<strong>Independence Day Greeting:</strong> A respectful design with a tricolor theme and subtle medical imagery.", caption: "Celebrating the freedom to move, live, and thrive without pain. Wishing everyone a Happy 78th Independence Day! #IndependenceDay2025 #JaiHind #FreedomOfMovement" },
-                { day: "Sun", date: "Aug 17", theme: "Trust", type: "Poster", idea: "<strong>Patient Success Story:</strong> A graphic with a powerful anonymous quote from a happy patient, showing only initials and age group.", caption: "\"I can finally walk without pain, thanks to the team at NuLife!\" - Mr. R.K., 65. Stories like these are why we do what we do. #PatientSuccess #AnonymousTestimonial #HappyPatient" }
-            ],
-            4: [
-                { day: "Mon", date: "Aug 19", theme: "Festival", type: "Poster", idea: "<strong>Raksha Bandhan Greeting:</strong> A creative graphic combining medical care symbolism with traditional Rakhi elements.", caption: "This Raksha Bandhan, let's promise to protect the bonds that support us for life. Happy Rakhi! #RakshaBandhan #Rakhi2025 #BondOfProtection #FamilyHealth" },
-                { day: "Wed", date: "Aug 21", theme: "Educate", type: "Reel", idea: "<strong>Explainer Video:</strong> \"What to expect during your first orthopedic consultation at NuLife\" - showing process without doctor's face.", caption: "Feeling nervous about your first visit? Here's a quick look at what to expect during your consultation, from check-in to meeting our expert team. #FirstVisit #OrthoConsultation #PatientGuide" },
-                { day: "Fri", date: "Aug 23", theme: "Promote", type: "Poster", idea: "<strong>Service Spotlight:</strong> Focus on Sports Injuries. Text: \"From diagnosis to recovery, we're with you.\"", caption: "Don't let an injury keep you on the sidelines. We offer expert care for sports injuries to get you back in the game safely. #SportsInjury #AthleteCare #Recovery #BalliaSports" }
-            ]
-        };
+        // Calendar file management
+        const calendarGrid = document.getElementById('calendar-grid');
+        
+        // Keep track of files that were added in the last 30 days (highlight as new)
+        const NEW_FILE_THRESHOLD_DAYS = 30;
 
-
-        let currentWeek = 1;
-        let contentChart;
-
-        const calendarContainer = document.getElementById('calendar-content');
-        const tabs = document.querySelectorAll('.tab');
-        const chartCanvas = document.getElementById('contentMixChart').getContext('2d');
-
-        function renderCalendar(week) {
-            const data = calendarData[week];
-            if (!data) return;
-
-            let tableHTML = `
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Day</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Content Idea</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Caption</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-            `;
-
-            data.forEach(item => {
-                tableHTML += `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-4 whitespace-nowrap"><div class="text-sm font-semibold text-gray-900">${item.day}</div></td>
-                        <td class="px-4 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">${item.date}</div></td>
-                        <td class="px-4 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.type.includes('Reel') ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}">
-                                ${item.type}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 text-sm text-gray-700">${item.idea}</td>
-                        <td class="px-4 py-4 text-sm text-gray-500 italic">${item.caption}</td>
-                    </tr>
-                `;
-            });
-
-            tableHTML += `</tbody></table>`;
-            calendarContainer.innerHTML = tableHTML;
+        // Function to format filename to display name
+        function formatDisplayName(filename) {
+            return filename
+                .replace('.html', '')
+                .replace(/[-_]/g, ' ')
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
         }
 
-        function updateChart(week) {
-            const data = calendarData[week];
-            if (!data) return;
-
-            const contentTypes = data.reduce((acc, item) => {
-                const type = item.type.includes('Reel') ? 'Reels' : 'Posters';
-                acc[type] = (acc[type] || 0) + 1;
-                return acc;
-            }, {});
-
-            const chartData = {
-                labels: ['Posters', 'Reels'],
-                datasets: [{
-                    label: 'Content Count',
-                    data: [contentTypes['Posters'] || 0, contentTypes['Reels'] || 0],
-                    backgroundColor: [
-                        'rgba(52, 211, 153, 0.6)',
-                        'rgba(59, 130, 246, 0.6)'
-                    ],
-                    borderColor: [
-                        'rgba(5, 150, 105, 1)',
-                        'rgba(37, 99, 235, 1)'
-                    ],
-                    borderWidth: 1
-                }]
+        // Function to check if file is new (created within threshold)
+        function isNewFile(filename) {
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth(); // 0-based (0 = January)
+            
+            // Extract month/year from filename (assuming format like "sept_2025.html")
+            const match = filename.match(/([a-z]+)_(\d{4})\.html/i);
+            if (!match) return false;
+            
+            const monthName = match[1].toLowerCase();
+            const fileYear = parseInt(match[2]);
+            
+            // Map month names to numbers (including common abbreviations)
+            const monthMap = {
+                'jan': 0, 'january': 0,
+                'feb': 1, 'february': 1,
+                'mar': 2, 'march': 2,
+                'apr': 3, 'april': 3,
+                'may': 4,
+                'jun': 5, 'june': 5,
+                'jul': 6, 'july': 6,
+                'aug': 7, 'august': 7,
+                'sep': 8, 'sept': 8, 'september': 8,
+                'oct': 9, 'october': 9,
+                'nov': 10, 'november': 10,
+                'dec': 11, 'december': 11
             };
+            
+            const fileMonth = monthMap[monthName];
+            if (fileMonth === undefined) return false;
+            
+            const fileDate = new Date(fileYear, fileMonth);
+            const currentMonthStart = new Date(currentYear, currentMonth);
+            
+            // Consider file "new" if it's for current month or any future month
+            return fileDate >= currentMonthStart;
+        }
 
-            if (contentChart) {
-                contentChart.data = chartData;
-                contentChart.update();
-            } else {
-                contentChart = new Chart(chartCanvas, {
-                    type: 'bar',
-                    data: chartData,
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return `${context.dataset.label}: ${context.raw}`;
-                                    }
-                                }
-                            }
-                        }
-                    }
+        // Function to generate potential calendar file names
+        function generatePotentialFiles() {
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const months = [
+                'jan', 'feb', 'mar', 'apr', 'may', 'jun',
+                'jul', 'aug', 'sep', 'oct', 'nov', 'dec'
+            ];
+            
+            const files = [];
+            
+            // Generate files for current year and next year
+            for (let year = currentYear; year <= currentYear + 1; year++) {
+                months.forEach(month => {
+                    files.push(`${month}_${year}.html`);
                 });
             }
+            
+            // Also check for previous year files
+            months.forEach(month => {
+                files.push(`${month}_${currentYear - 1}.html`);
+            });
+            
+            return files;
         }
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                currentWeek = tab.dataset.week;
-                tabs.forEach(t => t.classList.remove('tab-active'));
-                tab.classList.add('tab-active');
-                renderCalendar(currentWeek);
-                updateChart(currentWeek);
-            });
-        });
+        // Function to load and display calendar files
+        async function loadCalendarFiles() {
+            const potentialFiles = generatePotentialFiles();
+            const existingFiles = [];
+            
+            console.log('Checking for these files:', potentialFiles);
+            
+            // Check which files actually exist
+            for (const file of potentialFiles) {
+                try {
+                    const response = await fetch(`./archive/${file}`, { method: 'HEAD' });
+                    if (response.ok) {
+                        existingFiles.push(file);
+                        console.log('Found file:', file);
+                    }
+                } catch (e) {
+                    // File doesn't exist, skip it
+                    console.log('File not found:', file);
+                }
+            }
+            
+            console.log('Existing files:', existingFiles);
+            displayCalendarFiles(existingFiles);
+        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderCalendar(currentWeek);
-            updateChart(currentWeek);
-        });
+        // Function to display calendar files as cards
+        function displayCalendarFiles(files) {
+            if (files.length === 0) {
+                calendarGrid.innerHTML = '<div class="text-center text-gray-500 col-span-full">No calendar files found. Add .html files to the archive folder.</div>';
+                return;
+            }
+
+            // Sort files by date (newest first)
+            files.sort((a, b) => {
+                const extractDate = (filename) => {
+                    const match = filename.match(/([a-z]+)_(\d{4})\.html/i);
+                    if (!match) return new Date(0);
+                    
+                    const monthMap = {
+                        'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5,
+                        'jul': 6, 'aug': 7, 'sep': 8, 'sept': 8, 'oct': 9, 'nov': 10, 'dec': 11
+                    };
+                    
+                    const month = monthMap[match[1].toLowerCase()] || 0;
+                    const year = parseInt(match[2]);
+                    return new Date(year, month);
+                };
+                
+                return extractDate(b) - extractDate(a);
+            });
+
+            const cardsHTML = files.map(file => {
+                const displayName = formatDisplayName(file);
+                const isNew = isNewFile(file);
+                const newBadge = isNew ? '<span class="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">New</span>' : '';
+                const cardClass = isNew ? 'border-green-400 bg-green-50' : 'border-gray-200';
+                
+                return `
+                    <div class="relative border-2 ${cardClass} rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="window.location.href='./archive/${file}'">
+                        ${newBadge}
+                        <div class="text-center">
+                            <div class="text-xl font-semibold text-gray-800 mb-2">${displayName}</div>
+                            <div class="text-sm text-gray-600 mb-4">Content Calendar</div>
+                            <div class="bg-blue-600 text-white px-4 py-2 rounded-lg inline-block hover:bg-blue-700 transition-colors">
+                                View Calendar
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            calendarGrid.innerHTML = cardsHTML;
+        }
+
+        // Load files when page loads
+        document.addEventListener('DOMContentLoaded', loadCalendarFiles);
     </script>
 </body>
 </html>
