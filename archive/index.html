@@ -33,9 +33,9 @@
 
     <script>
         // --- Configuration ---
-        // IMPORTANT: Replace these placeholders with your actual GitHub username and repository name.
+        // IMPORTANT: I have set the username based on your screenshot. Please confirm the repository name is correct.
         const GITHUB_USERNAME = "NKomrade"; 
-        const REPO_NAME = "Nulife-calendar"; 
+        const REPO_NAME = "nulife-calendar"; 
         // -------------------
 
         const archiveList = document.getElementById('archive-list');
@@ -58,7 +58,7 @@
                 // Filter for .html files, ignore index.html, and sort them (optional)
                 const htmlFiles = files
                     .filter(file => file.name.endsWith('.html') && file.name !== 'index.html')
-                    .sort((a, b) => b.name.localeCompare(a.name)); // Sorts newest first, e.g., 2025-08 before 2025-07
+                    .sort((a, b) => b.name.localeCompare(a.name)); // Sorts newest first
 
                 if (htmlFiles.length === 0) {
                     archiveList.innerHTML = '<li>No archived calendars found.</li>';
@@ -71,10 +71,10 @@
                     const link = document.createElement('a');
 
                     // Create user-friendly link text from the filename
-                    // e.g., "july-2025.html" becomes "July 2025 Calendar"
+                    // e.g., "aug_2025.html" becomes "Aug 2025 Calendar"
                     const linkText = file.name
                         .replace('.html', '')
-                        .replace('-', ' ')
+                        .replace(/[-_]/g, ' ') // Handles both hyphens and underscores
                         .replace(/\b\w/g, char => char.toUpperCase()) + ' Calendar';
 
                     link.href = `./${file.name}`;
@@ -87,7 +87,7 @@
 
             } catch (error) {
                 console.error("Failed to fetch archive files:", error);
-                loadingMessage.textContent = 'Could not load archive. Please try again later.';
+                loadingMessage.textContent = 'Could not load archive. Check configuration in the script.';
                 loadingMessage.style.color = 'red';
             }
         }
