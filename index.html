@@ -7,10 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: "Cool Blues and Grays" -->
-    <!-- Application Structure Plan: A single-page dashboard layout. A top navigation bar with tabs for each week (Week 1, Week 2, etc.) allows users to switch views. The main content area displays a table with the detailed plan for the selected week. Above the table, a dynamic bar chart visualizes the content mix (Reels vs. Posters) for the selected week, providing a quick summary. This structure was chosen for its clarity and intuitive navigation, allowing the user to easily digest the month's plan week by week, both visually and textually. -->
-    <!-- Visualization & Content Choices: Report Info: The content calendar table. Goal: To provide a clear, organized, and interactive view of the 4-week social media plan. Viz/Presentation Method: The core data is presented in a structured HTML table. A bar chart (Chart.js) is used to summarize the content types for each week. Interaction: Users click on weekly tabs to update both the table content and the bar chart dynamically. Justification: This combined approach allows for both high-level visual summary (the chart) and detailed exploration (the table), which is more effective than a static document. Library/Method: Chart.js for the bar chart due to its simplicity and clean aesthetic. Tailwind CSS for layout and styling. Vanilla JS for all interactions. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -30,6 +26,32 @@
             height: 250px;
             max-height: 300px;
         }
+        .completed-row {
+            background-color: #f0f9ff !important;
+            opacity: 0.8;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #10b981;
+            cursor: pointer;
+        }
+        .progress-bar {
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #10b981;
+            transition: width 0.3s ease;
+        }
     </style>
 </head>
 <body class="antialiased text-gray-800">
@@ -42,6 +64,17 @@
 
         <main>
             <div class="bg-white p-6 rounded-2xl shadow-lg">
+                <!-- Progress Section -->
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-sm font-semibold text-gray-700">Week Progress</h3>
+                        <span id="progress-text" class="text-sm text-gray-600">0/0 completed</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
                 <div class="mb-8">
                     <h2 class="text-xl font-bold text-center text-gray-700 mb-2">Content Mix Overview</h2>
                     <p class="text-center text-gray-500 mb-4 text-sm">This chart shows the number of Reels vs. Posters planned for the selected week.</p>
@@ -61,6 +94,13 @@
 
                 <div id="calendar-content" class="overflow-x-auto">
                 </div>
+
+                <!-- Reset Progress Button -->
+                <div class="mt-6 text-center">
+                    <button id="reset-progress" class="px-4 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition-colors">
+                        Reset All Progress
+                    </button>
+                </div>
             </div>
         </main>
 
@@ -74,34 +114,79 @@
         const calendarData = {
             1: [
                 { day: "Mon", date: "July 28", theme: "Educate", type: "Poster", idea: "<strong>Myth Buster Monday:</strong> A clean graphic addressing a common myth. Text: \"Myth: You must rest completely after a fracture.\"", caption: "Is this a myth you believed? The right kind of movement is often key to a faster recovery! Always follow your doctor's advice. #MythBuster #FractureCare #OrthoFacts #NuLifeBallia" },
+                { day: "Tue", date: "July 29", theme: "Festival", type: "Poster", idea: "<strong>Nag Panchami Greeting:</strong> An elegant design with a subtle festive touch and traditional serpent motifs.", caption: "Wishing everyone a blessed and auspicious Nag Panchami. Stay safe and keep moving! #NagPanchami2025 #Festival #Ballia" },
                 { day: "Wed", date: "July 30", theme: "Engage/Trust", type: "Reel", idea: "<strong>Clinic Tour:</strong> A quick, professional tour of the hospital's physiotherapy wing or a specific piece of advanced equipment.", caption: "A glimpse into our state-of-the-art facilities at NuLife, where your speedy recovery is our priority. #NuLifeHospital #Ballia #AdvancedCare #Physiotherapy" },
-                { day: "Fri", date: "Aug 1", theme: "Trust", type: "Poster", idea: "<strong>Meet the Doctor:</strong> A professional photo of the lead doctor. Text: Include his name, qualifications, and a welcoming quote.", caption: "Meet Dr. [Doctor's Name], our lead orthopedic surgeon. His mission is to help you live a pain-free life with compassionate and expert care. #MeetTheDoctor #OrthopedicSurgeon #BalliaDoctor" },
-                { day: "Sun", date: "Aug 3", theme: "Festival", type: "Poster", idea: "<strong>Nag Panchami Greeting:</strong> An elegant design with a subtle festive touch.", caption: "Wishing everyone a blessed and auspicious Nag Panchami. Stay safe and keep moving! #NagPanchami2025 #Festival #Ballia" }
+                { day: "Fri", date: "Aug 1", theme: "Trust", type: "Poster", idea: "<strong>About NuLife Clinic:</strong> A professional design showcasing the clinic's credentials, specializations, and years of experience. Text: Include clinic achievements, certifications, and mission statement.", caption: "NuLife Hospital - Your trusted partner in orthopedic care in Ballia. Excellence in treatment, compassion in care. #NuLifeHospital #OrthopedicExcellence #BalliaHealthcare #TrustedCare" }
             ],
             2: [
-                { day: "Tue", date: "Aug 5", theme: "Educate", type: "Reel", idea: "<strong>How-To Video:</strong> \"3 Simple Stretches for Desk Workers.\" Demonstrate safe, easy stretches for the neck and back.", caption: "Feeling stiff from sitting all day? Try these 3 simple stretches! **Disclaimer: Consult a doctor before starting any new exercise.** #DeskStretches #BackPainRelief #WorkFromHome #HealthyHabits" },
+                { day: "Tue", date: "Aug 5", theme: "Educate", type: "Reel", idea: "<strong>How-To Video:</strong> \"3 Simple Stretches for Desk Workers.\" Demonstrate safe, easy stretches for the neck and back using clinic staff or animations.", caption: "Feeling stiff from sitting all day? Try these 3 simple stretches! **Disclaimer: Consult a doctor before starting any new exercise.** #DeskStretches #BackPainRelief #WorkFromHome #HealthyHabits" },
                 { day: "Thu", date: "Aug 7", theme: "Promote", type: "Poster", idea: "<strong>Service Spotlight:</strong> Focus on Total Knee Replacement. Text: \"Regain your mobility with our expert team.\"", caption: "Don't let knee pain hold you back. Learn more about our advanced Total Knee Replacement procedures. DM us to book a consultation. #KneeReplacement #JointPain #PainFreeLife #NuLifeCare" },
-                { day: "Sat", date: "Aug 9", theme: "Engage", type: "Reel", idea: "<strong>Q&A Reel:</strong> The doctor answers 2-3 common questions received from a \"Questions\" sticker in Stories.", caption: "You asked, we answered! Dr. [Doctor's Name] answers some of your most common questions about joint health. Have more questions? Drop them below! #QandA #OrthoExpert #AskADoctor" }
+                { day: "Sat", date: "Aug 9", theme: "Engage", type: "Reel", idea: "<strong>Q&A Reel:</strong> Voice-over or text-based answers to 2-3 common questions received from a \"Questions\" sticker in Stories, with clinic branding.", caption: "You asked, we answered! Our expert team at NuLife answers some of your most common questions about joint health. Have more questions? Drop them below! #QandA #OrthoExpert #AskTheExperts" }
             ],
             3: [
                 { day: "Mon", date: "Aug 12", theme: "Educate", type: "Poster (Carousel)", idea: "<strong>\"5 Foods for Stronger Bones.\"</strong> Each slide features one food item (e.g., Milk, Spinach, Fish) with a brief explanation.", caption: "Fuel your body, fortify your bones! Swipe through to see our top 5 foods for bone health. What's your favorite healthy food? #BoneHealth #HealthyEating #Calcium #VitaminD #Nutrition" },
-                { day: "Wed", date: "Aug 14", theme: "Trust", type: "Reel", idea: "<strong>\"A Day at NuLife\" Montage:</strong> Fast-paced clips of a patient consultation, a therapy session, the clean reception area.", caption: "From consultation to recovery, a look at the journey our patients take at NuLife. Your health and comfort are at the heart of everything we do. #PatientCare #HospitalLife #TrustedCare" },
-                { day: "Fri", date: "Aug 15", theme: "Festival", type: "Poster", idea: "<strong>Independence Day Greeting:</strong> A respectful design with a tricolor theme.", caption: "Celebrating the freedom to move, live, and thrive without pain. Wishing everyone a Happy 78th Independence Day! #IndependenceDay2025 #JaiHind #FreedomOfMovement" },
-                { day: "Sun", date: "Aug 17", theme: "Trust", type: "Poster", idea: "<strong>Patient Testimonial:</strong> A graphic with a powerful quote from a happy patient (with full consent).", caption: "\"I can finally walk without pain, thanks to the team at NuLife!\" - [Patient's Initials]. Stories like these are why we do what we do. #PatientSuccess #Testimonial #HappyPatient" }
+                { day: "Wed", date: "Aug 14", theme: "Trust", type: "Reel", idea: "<strong>\"A Day at NuLife\" Montage:</strong> Fast-paced clips of the clean reception area, therapy equipment, consultation rooms (without showing patient faces).", caption: "From consultation to recovery, a look at the journey our patients take at NuLife. Your health and comfort are at the heart of everything we do. #PatientCare #HospitalLife #TrustedCare" },
+                { day: "Fri", date: "Aug 15", theme: "Festival", type: "Poster", idea: "<strong>Independence Day Greeting:</strong> A respectful design with a tricolor theme and subtle medical imagery.", caption: "Celebrating the freedom to move, live, and thrive without pain. Wishing everyone a Happy 78th Independence Day! #IndependenceDay2025 #JaiHind #FreedomOfMovement" },
+                { day: "Sun", date: "Aug 17", theme: "Trust", type: "Poster", idea: "<strong>Patient Success Story:</strong> A graphic with a powerful anonymous quote from a happy patient, showing only initials and age group.", caption: "\"I can finally walk without pain, thanks to the team at NuLife!\" - Mr. R.K., 65. Stories like these are why we do what we do. #PatientSuccess #AnonymousTestimonial #HappyPatient" }
             ],
             4: [
-                { day: "Mon", date: "Aug 19", theme: "Festival", type: "Poster", idea: "<strong>Raksha Bandhan Greeting:</strong> A creative graphic of a bone with a Rakhi tied to it.", caption: "This Raksha Bandhan, let's promise to protect the bonds that support us for life. Happy Rakhi! #RakshaBandhan #Rakhi2025 #BondOfProtection #FamilyHealth" },
-                { day: "Wed", date: "Aug 21", theme: "Educate", type: "Reel", idea: "<strong>Explainer Video:</strong> \"What to expect during your first orthopedic consultation at NuLife.\"", caption: "Feeling nervous about your first visit? Here’s a quick look at what to expect during your consultation, from check-in to meeting the doctor. #FirstVisit #OrthoConsultation #PatientGuide" },
+                { day: "Mon", date: "Aug 19", theme: "Festival", type: "Poster", idea: "<strong>Raksha Bandhan Greeting:</strong> A creative graphic combining medical care symbolism with traditional Rakhi elements.", caption: "This Raksha Bandhan, let's promise to protect the bonds that support us for life. Happy Rakhi! #RakshaBandhan #Rakhi2025 #BondOfProtection #FamilyHealth" },
+                { day: "Wed", date: "Aug 21", theme: "Educate", type: "Reel", idea: "<strong>Explainer Video:</strong> \"What to expect during your first orthopedic consultation at NuLife\" - showing process without doctor's face.", caption: "Feeling nervous about your first visit? Here's a quick look at what to expect during your consultation, from check-in to meeting our expert team. #FirstVisit #OrthoConsultation #PatientGuide" },
                 { day: "Fri", date: "Aug 23", theme: "Promote", type: "Poster", idea: "<strong>Service Spotlight:</strong> Focus on Sports Injuries. Text: \"From diagnosis to recovery, we're with you.\"", caption: "Don't let an injury keep you on the sidelines. We offer expert care for sports injuries to get you back in the game safely. #SportsInjury #AthleteCare #Recovery #BalliaSports" }
             ]
         };
 
         let currentWeek = 1;
         let contentChart;
+        let completionStatus = JSON.parse(localStorage.getItem('nulife-calendar-progress') || '{}');
 
         const calendarContainer = document.getElementById('calendar-content');
         const tabs = document.querySelectorAll('.tab');
         const chartCanvas = document.getElementById('contentMixChart').getContext('2d');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const resetButton = document.getElementById('reset-progress');
+
+        function generateItemId(week, index) {
+            return `week${week}_item${index}`;
+        }
+
+        function updateProgress(week) {
+            const data = calendarData[week];
+            if (!data) return;
+
+            const totalItems = data.length;
+            const completedItems = data.filter((_, index) => {
+                const itemId = generateItemId(week, index);
+                return completionStatus[itemId];
+            }).length;
+
+            const progressPercentage = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+            
+            progressFill.style.width = `${progressPercentage}%`;
+            progressText.textContent = `${completedItems}/${totalItems} completed`;
+        }
+
+        function saveProgress() {
+            localStorage.setItem('nulife-calendar-progress', JSON.stringify(completionStatus));
+        }
+
+        function handleCheckboxChange(week, index, isChecked) {
+            const itemId = generateItemId(week, index);
+            completionStatus[itemId] = isChecked;
+            saveProgress();
+            updateProgress(week);
+            
+            // Update row styling
+            const row = document.querySelector(`[data-item-id="${itemId}"]`);
+            if (row) {
+                if (isChecked) {
+                    row.classList.add('completed-row');
+                } else {
+                    row.classList.remove('completed-row');
+                }
+            }
+        }
 
         function renderCalendar(week) {
             const data = calendarData[week];
@@ -111,6 +196,7 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
+                            <th scope="col" class="px-3 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Done</th>
                             <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Day</th>
                             <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
                             <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
@@ -121,9 +207,21 @@
                     <tbody class="bg-white divide-y divide-gray-200">
             `;
 
-            data.forEach(item => {
+            data.forEach((item, index) => {
+                const itemId = generateItemId(week, index);
+                const isCompleted = completionStatus[itemId] || false;
+                const rowClass = isCompleted ? 'completed-row' : '';
+                
                 tableHTML += `
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-gray-50 ${rowClass}" data-item-id="${itemId}">
+                        <td class="px-3 py-4 whitespace-nowrap">
+                            <div class="checkbox-container">
+                                <input type="checkbox" 
+                                       class="custom-checkbox" 
+                                       ${isCompleted ? 'checked' : ''}
+                                       onchange="handleCheckboxChange(${week}, ${index}, this.checked)">
+                            </div>
+                        </td>
                         <td class="px-4 py-4 whitespace-nowrap"><div class="text-sm font-semibold text-gray-900">${item.day}</div></td>
                         <td class="px-4 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">${item.date}</div></td>
                         <td class="px-4 py-4 whitespace-nowrap">
@@ -139,6 +237,7 @@
 
             tableHTML += `</tbody></table>`;
             calendarContainer.innerHTML = tableHTML;
+            updateProgress(week);
         }
 
         function updateChart(week) {
@@ -203,9 +302,13 @@
             }
         }
 
+        // Make handleCheckboxChange globally accessible
+        window.handleCheckboxChange = handleCheckboxChange;
+
+        // Tab event listeners
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
-                currentWeek = tab.dataset.week;
+                currentWeek = parseInt(tab.dataset.week);
                 tabs.forEach(t => t.classList.remove('tab-active'));
                 tab.classList.add('tab-active');
                 renderCalendar(currentWeek);
@@ -213,6 +316,17 @@
             });
         });
 
+        // Reset progress button
+        resetButton.addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset all progress? This action cannot be undone.')) {
+                completionStatus = {};
+                localStorage.removeItem('nulife-calendar-progress');
+                renderCalendar(currentWeek);
+                updateProgress(currentWeek);
+            }
+        });
+
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             renderCalendar(currentWeek);
             updateChart(currentWeek);
