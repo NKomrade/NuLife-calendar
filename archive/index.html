@@ -33,63 +33,66 @@
 
     <script>
         // --- Configuration ---
-        // IMPORTANT: I have set the username based on your screenshot. Please confirm the repository name is correct.
         const GITHUB_USERNAME = "NKomrade"; 
-        const REPO_NAME = "NuLife-calendar"; 
+        const REPO_NAME = "NuLife-calendar"; // Case-sensitive repository name
         // -------------------
 
         const archiveList = document.getElementById('archive-list');
         const loadingMessage = document.getElementById('loading-message');
 
-        // This is the URL to the GitHub API for your archive folder's contents
         const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/archive`;
 
-        async function fetchArchiveFiles() {
-            try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`GitHub API error: ${response.statusText}`);
-                }
-                const files = await response.json();
+        function fetchArchiveFiles() {
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`GitHub API error: ${response.statusText}. Check if the repository is public and the name is correct.`);
+                    }
+                    return response.json();
+                })
+                .then(files => {
+                    archiveList.innerHTML = ''; // Clear the "Loading..." message
 
-                // Clear the "Loading..." message
-                archiveList.innerHTML = '';
+                    const htmlFiles = files
+                        .filter(file => file.name.endsWith('.html') && file.name !== 'index.html')
+                        .sort((a, b) => b.name.localeCompare(a.name)); // Sorts newest first
 
-                // Filter for .html files, ignore index.html, and sort them (optional)
-                const htmlFiles = files
-                    .filter(file => file.name.endsWith('.html') && file.name !== 'index.html')
-                    .sort((a, b) => b.name.localeCompare(a.name)); // Sorts newest first
+                    if (htmlFiles.length === 0) {
+                        archiveList.innerHTML = '<li>No archived calendars found yet.</li>';
+                        return;
+                    }
 
-                if (htmlFiles.length === 0) {
-                    archiveList.innerHTML = '<li>No archived calendars found.</li>';
-                    return;
-                }
+                    htmlFiles.forEach(file => {
+                        const listItem = document.createElement('li');
+                        const link = document.createElement('a');
 
-                // Create a list item and link for each file
-                htmlFiles.forEach(file => {
-                    const listItem = document.createElement('li');
-                    const link = document.createElement('a');
+                        const linkText = file.name
+                            .replace('.html', '')
+                            .replace(/[-_]/g, ' ') 
+                            .replace(/\b\w/g, char => char.toUpperCase()) + ' Calendar';
 
-                    // Create user-friendly link text from the filename
-                    // e.g., "aug_2025.html" becomes "Aug 2025 Calendar"
-                    const linkText = file.name
-                        .replace('.html', '')
-                        .replace(/[-_]/g, ' ') // Handles both hyphens and underscores
-                        .replace(/\b\w/g, char => char.toUpperCase()) + ' Calendar';
-
-                    link.href = `./${file.name}`;
-                    link.textContent = linkText;
-                    link.className = "text-lg text-blue-600 hover:text-blue-800 hover:underline";
-                    
-                    listItem.appendChild(link);
-                    archiveList.appendChild(listItem);
+                        link.href = `./${file.name}`;
+                        link.textContent = linkText;
+                        link.className = "text-lg text-blue-600 hover:text-blue-800 hover:underline";
+                        
+                        listItem.appendChild(link);
+                        archiveList.appendChild(listItem);
+                    });
+                })
+                .catch(error => {
+                    console.error("Failed to fetch archive files:", error);
+                    loadingMessage.innerHTML = `
+                        <div class="text-red-600">
+                            <p class="font-semibold">Error: Could not load archive files.</p>
+                            <p class="text-sm mt-2">Please check the following in the script:</p>
+                            <ul class="list-disc list-inside text-sm mt-1">
+                                <li>The repository name ('${REPO_NAME}') is correct (it's case-sensitive).</li>
+                                <li>The repository is public.</li>
+                            </ul>
+                            <p class="text-xs mt-2">Details: ${error.message}</p>
+                        </div>
+                    `;
                 });
-
-            } catch (error) {
-                console.error("Failed to fetch archive files:", error);
-                loadingMessage.textContent = 'Could not load archive. Check configuration in the script.';
-                loadingMessage.style.color = 'red';
-            }
         }
 
         // Run the function when the page loads
